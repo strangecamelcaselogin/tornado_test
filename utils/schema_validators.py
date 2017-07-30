@@ -1,10 +1,10 @@
 from functools import wraps
-from voluptuous import Schema, MultipleInvalid
+from voluptuous import Schema, MultipleInvalid, PREVENT_EXTRA
 
 
-def dvalidate(schema, **params):
+def dvalidate(schema, required=False, extra=PREVENT_EXTRA):
     assert isinstance(schema, dict)
-    schema = Schema(schema, params)
+    schema = Schema(schema, required, extra)
 
     def true_decorator(fun):
         @wraps(fun)
@@ -12,7 +12,7 @@ def dvalidate(schema, **params):
             try:
                 schema(_self.args)
                 result = fun(_self, *args, **kwargs)
-            except Exception as e:
+            except MultipleInvalid as e:
                 return _self.write('wrong request args: ' + str(e))
 
             return result
@@ -22,6 +22,6 @@ def dvalidate(schema, **params):
     return true_decorator
 
 
-def mvalidate(**kwargs):
-    schema = Schema(kwargs)
+def mvalidate(required=False, extra=PREVENT_EXTRA, **schema):
+    schema = Schema(schema, required, extra)
     return schema
