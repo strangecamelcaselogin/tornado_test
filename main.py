@@ -20,23 +20,24 @@ def make_app(rout_rules):
 
 
 if __name__ == '__main__':
+    host = 'localhost'
     port = 8888
     processes = 1
     routs = [(r'/slow', HellowWorldHandler),
              (r'/fast', FastHandler)]
 
-    gen_log.info('prepare to start server...')
     setup()
-    gen_log.info('setup ends...')
+    gen_log.info('Setup ends.')
 
-    app = make_app(routs)
+    gen_log.info('Prepare to start server at {}:{} in {} processes.'.format(host, port, processes))
 
     try:
+        app = make_app(routs)
         server = HTTPServer(app)
-        server.bind(port)
+        server.bind(port, address=host)
         server.start(processes)
-        gen_log.info('start server...')
 
+        gen_log.info('Started.')
         IOLoop.current().start()
 
     except KeyboardInterrupt:
@@ -46,6 +47,6 @@ if __name__ == '__main__':
         pass  # todo log stacktrace
 
     finally:
-        gen_log.info('stop server.')
+        gen_log.info('Stop server.')
         ioloop = IOLoop.instance()
         ioloop.add_callback(ioloop.stop)
