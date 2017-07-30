@@ -1,5 +1,18 @@
+import ujson
 from functools import wraps
 from voluptuous import Schema, MultipleInvalid, PREVENT_EXTRA
+
+
+def construct_response(exception):
+    result = []
+    if isinstance(exception, MultipleInvalid):
+        for e in exception.errors:
+            result.append({
+                'msg': str(e),
+                'error_type': e.error_type
+            })
+
+    return ujson.dumps(result)
 
 
 def dvalidate(schema, required=False, extra=PREVENT_EXTRA):
@@ -12,10 +25,10 @@ def dvalidate(schema, required=False, extra=PREVENT_EXTRA):
             try:
                 schema(_self.args)
                 result = fun(_self, *args, **kwargs)
-            except MultipleInvalid as e:
-                return _self.write('wrong request args: ' + str(e))
+                return result
 
-            return result
+            except MultipleInvalid as e:
+                _self.write(construct_response(e))
 
         return wrapper
 
