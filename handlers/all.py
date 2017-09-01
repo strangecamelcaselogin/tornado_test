@@ -1,9 +1,8 @@
-import ujson
-
 import tornado.web
+from voluptuous import Required, PREVENT_EXTRA
 
+from loggers import app_log
 from utils.schema_validators import dvalidate
-from voluptuous import Any, All, Required, PREVENT_EXTRA
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -19,4 +18,6 @@ class HellowWorldHandler(MainHandler):
 
 class FastHandler(MainHandler):
     def get(self):
+        app_log.info('fast handler')
         self.write('fast')
+        app_log.info('fast handler end.')
