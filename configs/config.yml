@@ -1,0 +1,18 @@
+server:
+  host: localhost
+  port: 8888
+  processes: 1
+
+loggers:
+  directory: logs
+  app_log:
+    level: INFO
+    file: application.log
+
+  gen_log:
+    level: INFO
+    file: general.log
+
+  acc_log:
+    level: DEBUG
+    file: access.log
